@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- BANNER MESSAGE -->
+<!-- <div class="alert alert-success" role="alert">
+  Hi!
+</div> -->
+
+<!-- LISTING BOXES FOR THE GAME -->
+
+<h2> Which costs more? </h2> 
+<h2>Score: <span id="score">0</span> &emsp;<span id="result"></span></h2>
+
+<div class="row">
+
+  <div class="col-md-5">
+    <div id="listing-left" class="listing-box">
+      <div class="listing-box__image">
+        <img src="https://images.craigslist.org/00n0n_e7oLBybv9HP_0jm0pO_600x450.jpg">
+      </div>
+      <div class="listing-box__title"><h3>Cuisinart Blender Cup</h3></div>
+      <div class="listing-box__location"><h5>Seattle, CA</h5></div>
+    </div>
+  </div>
+
+  <div class=""col-md-2>
+    <div class="guess_button" style="margin-top: 200px;">
+      <button id="guess_button" class="btn btn-primary" onclick="make_guess('left')">⬅️</button>
+    </div>
+    <div class="guess_button">
+      <button id="guess_button" class="btn btn-primary" onclick="make_guess('right')">👉</button>
+    </div>
+    <hr>
+    <div class="guess_button">
+      <button id="next_listing" class="btn btn-primary" onclick="next_listing()">Next</button>
+    </div>
+  </div>
+  
+  <div class="col-md-5">
+    <div id="listing-right" class="listing-box">
+      <div class="listing-box__image">
+        <img src="https://images.craigslist.org/00k0k_cZ4YBRLXAO2_0ak07L_600x450.jpg">
+      </div>
+      <div class="listing-box__title"><h3>2015 Toyota Camry SE</h3></div>
+      <div class="listing-box__location"><h5>San Francisco, CA</h5></div>
+    </div>
+  </div>  
+
+</div>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#new-game-modal">
+  New Game
+</button>
+
+<br>
+
+<!-- NEW GAME MODAL -->
+<div class="modal" id="new-game-modal">
+  <div class="modal-dialog" role="document">
+  <div class="modal-content">
+
+  <!-- MODAL HEADER -->
+  <div class="modal-header">
+      <h4 class="modal-title">New Game</h4>
+      <!-- CLOSE BUTTON -->
+      <button type="button" class="close" data-dismiss="modal">
+        <span>&times;</span>
+      </button>
+  </div>
+
+  <!-- MODAL BODY -->
+  <div class="modal-body modal-scroll">
+    <form action="#" method="POST" id="game-settings-form">
+        
+      <label for="game-name">Game Name</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi-card-text"></i></span>
+            <input class="form-control" type="text" name="game_name" id="game-name" readonly="true" value="">
+        </div>
+        
+        <br>
+
+        <label for="categories-select">craigslist categories <br>(use shft/ctrl to select multiple)</label>
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+            <select class="form-control" name="categories-select" id="categories-select" multiple="multiple" style="height: 20rem; overflow-y: scroll;">
+                <!-- TO BE ADDED USING JS LATER -->
+            </select>
+        </div>
+
+        <div class="checkbox">
+          <label>
+              <input type="checkbox" name="categories-check" id="categories-check" checked>
+              <span> select all</span>
+          </label>
+        </div>
+
+        <script type="text/javascript">
+          // Add craigslist categories to the category-select element
+          fetch("/api/categories", {method: 'GET'})
+          .then(response => response.json())
+          .then(data => {
+              for (let abbr in data) {
+                console.log(abbr);
+                  $("#categories-select").append(`<option selected value="${abbr}">${data[abbr]}</option>`);
+              }
+          });
+
+          // Add event listener to the select all checkbox
+          $("#categories-check").change(function() {
+            if (this.checked) {
+              for (let option of $("#categories-select").children()) {
+                option.selected = true;
+              }
+            } else {
+              $("#categories-select").val("");
+            }
+          });
+
+          // Add event listener to the categories-select element
+          $("#categories-select").change(function() {
+            if ($("#categories-select").val().length == $("#categories-select").children().length) {
+              $("#categories-check").prop("checked", true);
+            } else {
+              $("#categories-check").prop("checked", false);
+            }
+          });
+        </script>
+
+    </form>
+  </div>
+  
+  <!-- MODAL FOOTER -->
+  <div class="modal-footer">
+      <button type="button" class="btn btn-danger" id="start-game-button"><i class="bi-door-open-fill"></i>Start Game</button>
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+  </div>
+
+  </div>
+  </div>
+</div>
+
+{% endblock %}
